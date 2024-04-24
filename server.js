@@ -52,7 +52,7 @@ db.serialize(() => {
       title TEXT NOT NULL,
       description TEXT,
       amount REAL NOT NULL,
-      date TEXT NOT NULL,
+      date DATE NOT NULL,
       FOREIGN KEY (user_id) REFERENCES users (id)
     )`);
 });
@@ -60,9 +60,9 @@ db.serialize(() => {
 // Registrasi
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
-  // Check if username and password are provided
+  // Cek username dan password terisi atau tidak
   if (!username || !password) {
-    return res.status(400).send("Username and password are required");
+    return res.status(400).send("Username dan password harus diisi");
   }
 
   try {
@@ -135,7 +135,7 @@ app.get("/expenses", authenticateToken, (req, res) => {
   );
 });
 
-// View a single expense by ID
+// Lihat catatan berdasarkan ID
 app.get("/expenses/:id", authenticateToken, (req, res) => {
   const { id } = req.params;
   db.get(
@@ -154,10 +154,10 @@ app.get("/expenses/:id", authenticateToken, (req, res) => {
   );
 });
 
-// Update an expense
+// Update catatan
 app.put("/expenses/:id", authenticateToken, (req, res) => {
   const { title, description, amount, date } = req.body;
-  const { id } = req.params; // Ensure you're capturing the 'id' parameter from the URL
+  const { id } = req.params; // Memastikan mengambil parameter 'id' dari URL
 
   db.run(
     `UPDATE expenses SET title = ?, description = ?, amount = ?, date = ? WHERE id = ? AND user_id = ?`,
@@ -175,7 +175,7 @@ app.put("/expenses/:id", authenticateToken, (req, res) => {
   );
 });
 
-// Delete an expense
+// Hapus catatan
 app.delete("/expenses/:id", authenticateToken, (req, res) => {
   const { id } = req.params;
 
@@ -213,11 +213,11 @@ function filterDataByDate(startDate, endDate) {
   );
 }
 
-// Filter expenses based on date range
+// Filter berdasarkan tanggal
 app.get("/expenses", authenticateToken, (req, res) => {
   const { startDate, endDate } = req.query;
 
-  // Ensure both start date and end date are provided
+  // Pastikan tanggal mulai dan tanggal akhir diisi
   if (!startDate || !endDate) {
     return res
       .status(400)

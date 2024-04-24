@@ -1,5 +1,6 @@
 let accessToken = "";
 
+// Fungsi untuk registrasi
 async function register() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
@@ -16,6 +17,7 @@ async function register() {
   alert(data);
 }
 
+// Fungsi untuk login
 async function login() {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
@@ -30,17 +32,18 @@ async function login() {
 
   const data = await response.json();
   if (response.ok) {
-    localStorage.setItem("accessToken", data.accessToken); // Store the token in localStorage
-    accessToken = data.accessToken; // Set the token to the global variable
+    localStorage.setItem("accessToken", data.accessToken); // Simpan token di localStorage
+    accessToken = data.accessToken; // Set token ke variabel global
     document.getElementById("userForm").style.display = "none";
     document.getElementById("expenseForm").style.display = "block";
-    fetchExpenses(); // Fetch expenses after login
-    alert("Logged in successfully");
+    fetchExpenses(); // Ambil catatan setelah login
+    alert("Login berhasil");
   } else {
-    alert("Login failed: " + data.message);
+    alert("Login gagal: " + data.message);
   }
 }
 
+// Fungsi untuk mengambil semua catatan
 async function fetchExpenses() {
   const response = await fetch("/expenses", {
     method: "GET",
@@ -49,15 +52,16 @@ async function fetchExpenses() {
     },
   });
   const expenses = await response.json();
-  refreshExpenses(expenses); // Function to update the DOM with expenses
+  refreshExpenses(expenses); // Fungsi untuk mengupdate DOM dengan catatan
 }
 
+// Fungsi untuk menampilkan catatan
 function refreshExpenses(expenses) {
   const expensesList = document.getElementById("expensesList");
-  expensesList.innerHTML = ""; // Clear previous list
+  expensesList.innerHTML = ""; // Membersihkan list sebelumnya
 
   if (expenses.length === 0) {
-    expensesList.innerHTML = "<p>No expenses found. Add some expenses!</p>";
+    expensesList.innerHTML = "<p>Tidak ada catatan. Tambahkan catatan!</p>";
   } else {
     expensesList.innerHTML += `
         <div>
@@ -87,12 +91,13 @@ function refreshExpenses(expenses) {
   }
 }
 
+// Fungsi untuk mengambil catatan berdasarkan tanggal
 async function fetchFilteredExpenses() {
   const startDate = document.getElementById("startDate").value;
   const endDate = document.getElementById("endDate").value;
 
   if (!startDate || !endDate) {
-    alert("Please select both start and end dates.");
+    alert("Silakan pilih tanggal mulai dan tanggal akhir.");
     return;
   }
 
@@ -110,17 +115,18 @@ async function fetchFilteredExpenses() {
     const expenses = await response.json();
     displayFilteredExpenses(expenses);
   } else {
-    alert("Failed to fetch filtered expenses.");
+    alert("Gagal mengambil catatan berdasarkan tanggal.");
   }
 }
 
+// Fungsi untuk menampilkan catatan berdasarkan tanggal
 function displayFilteredExpenses(expenses) {
   const expensesList = document.getElementById("expensesList");
-  expensesList.innerHTML = ""; // Clear previous list
+  expensesList.innerHTML = ""; // Membersihkan list sebelumnya
 
   if (expenses.length === 0) {
     expensesList.innerHTML =
-      "<p>No expenses found for the selected date range.</p>";
+      "<p>Tidak ada catatan untuk rentang tanggal yang dipilih.</p>";
   } else {
     expenses.forEach((expense) => {
       expensesList.innerHTML += `
@@ -140,9 +146,10 @@ function displayFilteredExpenses(expenses) {
   }
 }
 
+// Fungsi untuk mengedit catatan
 function editExpense(expenseId) {
   const editDiv = document.getElementById(`editDiv-${expenseId}`);
-  editDiv.style.display = "block"; // Show the editable input fields
+  editDiv.style.display = "block"; // Tampilkan input yang akan diedit
 }
 
 async function submitExpenseUpdate(expenseId) {
@@ -160,13 +167,14 @@ async function submitExpenseUpdate(expenseId) {
   });
 
   if (response.ok) {
-    alert("Expense updated successfully");
-    fetchExpenses(); // Refresh the list after updating
+    alert("Catatan berhasil diupdate");
+    fetchExpenses(); // refresh list setelah update
   } else {
-    alert("Failed to update expense");
+    alert("Gagal mengupdate catatan");
   }
 }
 
+// Fungsi untuk menambah catatan
 async function addExpense() {
   const title = document.getElementById("title").value;
   const description = document.getElementById("description").value;
@@ -186,12 +194,13 @@ async function addExpense() {
   alert(data);
 
   if (response.ok) {
-    fetchExpenses(); // Fetch all expenses to update the list
+    fetchExpenses(); // fetch semua catatan untuk mengupdate daftar
   }
 }
 
+// Fungsi untuk menghapus catatan
 async function deleteExpense(expenseId) {
-  // Function to handle expense deletion
+  // Fungsi untuk menangani penghapusan catatan
   const response = await fetch(`/expenses/${expenseId}`, {
     method: "DELETE",
     headers: {
@@ -199,20 +208,20 @@ async function deleteExpense(expenseId) {
     },
   });
   if (response.ok) {
-    fetchExpenses(); // Refresh the list after deletion
+    fetchExpenses(); // refresh list setelah penghapusan
   } else {
-    alert("Failed to delete expense.");
+    alert("Gagal menghapus catatan!");
   }
 }
 
 function logout() {
-  localStorage.removeItem("accessToken"); // Remove the token from localStorage
-  accessToken = null; // Clear the global variable
+  localStorage.removeItem("accessToken"); // Hapus token dari localStorage
+  accessToken = null; // Bersihkan variabel global
   document.getElementById("userForm").style.display = "block";
   document.getElementById("expenseForm").style.display = "none";
   // Optionally, clear any displayed data that requires login
   document.getElementById("expensesList").innerHTML = "";
-  alert("Logged out successfully");
+  alert("Logout berhasil");
 }
 
 document.addEventListener("DOMContentLoaded", function () {
