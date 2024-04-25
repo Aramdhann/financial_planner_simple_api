@@ -99,8 +99,14 @@ function refreshExpenses(expenses) {
   } else {
     expensesList.innerHTML += `
         <div class="d-flex flex-column flex-md-row gap-md-3">
-          <input type="date" id="startDate" placeholder="Start Date" class="form-control" />
-          <input type="date" id="endDate"   placeholder="End Date" class="form-control" />
+          <div>
+            <label>Start date</label>
+            <input type="date" id="startDate" placeholder="Start Date" class="form-control" />
+          </div>
+          <div>
+            <label>End date</label>
+            <input type="date" id="endDate"   placeholder="End Date" class="form-control" />
+          </div>
           <button onclick="fetchFilteredExpenses()" class="btn btn-primary d-block w-100">Apply Date Filter</button>
         </div>
         
@@ -164,22 +170,25 @@ function displayFilteredExpenses(expenses) {
 
   if (expenses.length === 0) {
     expensesList.innerHTML =
-      "<p>Tidak ada catatan untuk rentang tanggal yang dipilih.</p>";
+      "<p class='alert alert-info text-center'>Tidak ada catatan untuk rentang tanggal yang dipilih.</p>";
   } else {
     expenses.forEach((expense) => {
       expensesList.innerHTML += `
-      <div id="expense-${expense.id}">
-      <span>${expense.title} - ${expense.amount} - ${expense.date}</span>
-      <button onclick="editExpense(${expense.id})">Edit</button>
-      <button onclick="deleteExpense(${expense.id})">Delete</button>
-      <div id="editDiv-${expense.id}" style="display:none;">
-          <input type="text" id="title-${expense.id}" value="${expense.title}">
-          <input type="number" id="amount-${expense.id}" value="${expense.amount}">
-          <input type="date" id="date-${expense.id}" value="${expense.date}">
-          <textarea id="description-${expense.id}" placeholder="Masukkan deskripsi">${expense.description}</textarea>
-          <button onclick="submitExpenseUpdate(${expense.id})">Save</button>
+      <div id="expense-${expense.id}" class="border rounded p-2 mb-2">
+          <p><span class="fw-bold">Title</span>: ${expense.title}</p>
+          <p><span class="fw-bold">Amount</span>: ${expense.amount}</p>
+          <p><span class="fw-bold">Date</span>: ${expense.date}</p>
+          <p><span class="fw-bold">Description</span>: ${expense.description}</p>
+          <button onclick="editExpense(${expense.id})" class="btn btn-outline-primary">Edit</button>
+          <button onclick="deleteExpense(${expense.id})" class="btn btn-outline-danger">Delete</button>
+          <div id="editDiv-${expense.id}" style="display:none;">
+              <input type="text" id="title-${expense.id}" value="${expense.title}" class="form-control">
+              <input type="number" id="amount-${expense.id}" value="${expense.amount}" class="form-control">
+              <input type="date" id="date-${expense.id}" value="${expense.date}" class="form-control">
+              <textarea id="description-${expense.id}" placeholder="Masukkan deskripsi" class="form-control">${expense.description}</textarea>
+              <button onclick="submitExpenseUpdate(${expense.id})" class="btn btn-warning">Save</button>
+          </div>
       </div>
-  </div>
           `;
     });
   }
@@ -227,8 +236,9 @@ async function addExpense() {
     const toast = new bootstrap.Toast(document.getElementById("toast"), {
       autohide: false,
     });
-    document.getElementById("toastBody").innerHTML =
-      `Periksa bahwa semua kolom input harus <strong>terisi dan format sesuai</strong> sebelum melanjutkan`;
+    document.getElementById(
+      "toastBody"
+    ).innerHTML = `Periksa bahwa semua kolom input harus <strong>terisi dan format sesuai</strong> sebelum melanjutkan`;
     toast.show();
     return;
   }
@@ -271,7 +281,7 @@ function logout() {
   accessToken = null; // Bersihkan variabel global
   document.getElementById("userForm").style.display = "block";
   document.getElementById("expenseForm").style.display = "none";
-  // Optionally, clear any displayed data that requires login
+  // Opsional, hapus semua data yang memerlukan login
   document.getElementById("expensesList").innerHTML = "";
   showToast("Logout berhasil", "info");
 }
@@ -279,9 +289,9 @@ function logout() {
 document.addEventListener("DOMContentLoaded", function () {
   const storedToken = localStorage.getItem("accessToken");
   if (storedToken) {
-    accessToken = storedToken; // Set the global access token
+    accessToken = storedToken; // atur global token storage
     document.getElementById("userForm").style.display = "none";
     document.getElementById("expenseForm").style.display = "block";
-    fetchExpenses(); // Fetch expenses immediately if already logged in
+    fetchExpenses(); // ambil data ketika berhasil login
   }
 });
