@@ -72,9 +72,9 @@ app.post("/register", async (req, res) => {
       [username, hashedPassword],
       function (err) {
         if (err) {
-          return res.status(400).send("Username already exists");
+          return res.status(400).send("Username sudah dipakai");
         }
-        res.status(201).send("User created");
+        res.status(201).send("Akun berhasil dibuat, silahkan sign in!");
       }
     );
   } catch (err) {
